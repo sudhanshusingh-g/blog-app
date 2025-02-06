@@ -16,7 +16,9 @@ function BlogHomepage() {
     async function getAllBlogs(){
         try {
 
-            const response= await axios.get<Blog[]>("http://localhost:3000/");
+            const response = await axios.get<Blog[]>(
+              import.meta.env.BACKEND_URL
+            );
             setBlogList(response.data);
             setLoading(false);
         } catch (error) {

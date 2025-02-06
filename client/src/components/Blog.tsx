@@ -24,7 +24,9 @@ function Blog() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:3000/api/blog/${id}`);
+      const response = await axios.get(
+        import.meta.env.BACKEND_URL + `/api/blog/${id}`
+      );
       const data = response.data;
       data.date = new Date(data.date);
       setBlog(data);
@@ -40,9 +42,12 @@ function Blog() {
     if (!blog) return;
     try {
       const updatedFavs = blog.meta.favs + 1;
-      await axios.put(`http://localhost:3000/api/blog/${id}`, {
-        favs: updatedFavs,
-      });
+      await axios.put(
+        import.meta.env.BACKEND_URL + `/api/blog/${id}`,
+        {
+          favs: updatedFavs,
+        }
+      );
       setBlog({ ...blog, meta: { ...blog.meta, favs: updatedFavs } });
     } catch (err) {
       console.error("Error increasing likes:", err);

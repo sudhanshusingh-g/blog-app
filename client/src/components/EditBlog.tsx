@@ -31,7 +31,7 @@ function EditBlog() {
     async function fetchBlog() {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/blog/${id}`
+          import.meta.env.BACKEND_URL+`/api/blog/${id}`
         );
         const blogData = response.data;
         setFormData({
@@ -81,7 +81,10 @@ function EditBlog() {
     };
 
     try {
-      await axios.put(`http://localhost:3000/api/blog/${id}`, payload);
+      await axios.put(
+        import.meta.env.BACKEND_URL+`/api/blog/${id}`,
+        payload
+      );
       navigate("/about");
     } catch (error) {
       console.error("Error updating the blog:", error);

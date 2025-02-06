@@ -59,7 +59,8 @@ function CreateBlog() {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/blog",
+        import.meta.env.BACKEND_URL+
+        "/api/blog",
         payload
       );
       navigate("/");

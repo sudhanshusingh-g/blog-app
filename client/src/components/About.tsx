@@ -18,7 +18,7 @@ function About() {
 
   async function getAllBlogs() {
     try {
-      const response = await axios.get<Blog[]>("http://localhost:3000/");
+      const response = await axios.get<Blog[]>(import.meta.env.BACKEND_URL);
       setBlogList(response.data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -29,7 +29,9 @@ function About() {
 
   async function handleDeleteBlog(blogId: string) {
     try {
-      await axios.delete(`http://localhost:3000/api/blog/${blogId}`);
+      await axios.delete(
+        import.meta.env.BACKEND_URL + `/api/blog/${blogId}`
+      );
       setBlogList(blogList.filter((blog) => blog._id !== blogId));
       setDeleteBlogId(null);
     } catch (error) {
