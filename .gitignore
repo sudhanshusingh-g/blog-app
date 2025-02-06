@@ -68,6 +68,3 @@ Thumbs.db
 # Ignore optional debugging configs
 debug.log
 
-# Ignore package-lock and yarn files (optional)
-package-lock.json
-yarn.lock
