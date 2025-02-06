@@ -31,7 +31,7 @@ function EditBlog() {
     async function fetchBlog() {
       try {
         const response = await axios.get(
-          import.meta.env.BACKEND_URL+`/api/blog/${id}`
+          import.meta.env.VITE_BACKEND_URL + `api/blog/${id}`
         );
         const blogData = response.data;
         setFormData({
@@ -82,7 +82,7 @@ function EditBlog() {
 
     try {
       await axios.put(
-        import.meta.env.BACKEND_URL+`/api/blog/${id}`,
+        import.meta.env.VITE_BACKEND_URL + `api/blog/${id}`,
         payload
       );
       navigate("/about");
