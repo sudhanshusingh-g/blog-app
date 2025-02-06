@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+body{
+    scroll-behavior: smooth;
+}
+
+@layer base{
+    .no-scrollbar::-webkit-scrollbar {
+          display: none;
+      }
+}

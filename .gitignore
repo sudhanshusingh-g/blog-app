@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build directories
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Frontend specific
+/.next
+/.cache
+/.nuxt
+/.parcel-cache
+public/static/
+
+# React Native
+.expo/
+.expo-shared/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+.idea
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/*.code-workspace
+
+# Testing
+/coverage
+/jest-test-results.json
+
+# Git-specific
+*.orig
+*.rej
+
+# Miscellaneous
+*.log
+*.lock
+*.gz
+*.sqlite
+*.zip
+*.tgz
+*.bak
+*.swp
+*.swo
+*.class
+
+# Ignore compiled Typescript files
+*.tsbuildinfo
+
+# Ignore optional debugging configs
+debug.log
+
+# Ignore package-lock and yarn files (optional)
+package-lock.json
+yarn.lock
