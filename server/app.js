@@ -1,7 +1,7 @@
 import express from "express"
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Blog from "./models/Blog.js";
+import Blog from "./models/blog.js";
 import cors from "cors";
 dotenv.config();
 
