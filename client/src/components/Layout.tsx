@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { Feather, MoonStar } from "lucide-react";
+import { Feather } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import ToggleThemeButton from "./ToggleThemeButton";
 
