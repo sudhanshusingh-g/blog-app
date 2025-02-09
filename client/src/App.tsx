@@ -5,17 +5,20 @@ import About from "./components/About";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import EditBlog from "./components/EditBlog";
+import { ThemeProvider } from "./context/ThemeContext";
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<BlogHomepage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/blog/:id" element={<Blog />} />
-        <Route path="/create-blog" element={<CreateBlog />} />
-        <Route path="/edit-blog/:id" element={<EditBlog />} />
-      </Routes>
-    </Layout>
+    <ThemeProvider>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<BlogHomepage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog/:id" element={<Blog />} />
+          <Route path="/create-blog" element={<CreateBlog />} />
+          <Route path="/edit-blog/:id" element={<EditBlog />} />
+        </Routes>
+      </Layout>
+    </ThemeProvider>
   );
 }
 

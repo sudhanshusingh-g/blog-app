@@ -1,6 +1,7 @@
 import { ReactNode } from "react"
 import { Feather, MoonStar } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import ToggleThemeButton from "./ToggleThemeButton";
 
 interface LayoutProps{
     children:ReactNode;
@@ -12,9 +13,7 @@ function Layout({children}:LayoutProps) {
     <div className="max-w-3/4 mx-auto h-screen">
       {/* Navigation */}
       <nav className="flex items-center justify-between py-4 border-b-[1px] h-[8%]">
-        <div className="border rounded p-1 cursor-pointer shadow-lg">
-          <MoonStar />
-        </div>
+        <ToggleThemeButton/>
         <ul className="flex items-center gap-4 font-semibold">
           <li className="cursor-pointer relative after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-black after:w-0 after:transition-all hover:after:w-full">
             <Link to={"/"}>Blogs</Link>
@@ -25,7 +24,7 @@ function Layout({children}:LayoutProps) {
           </li>
           <li
             className="flex items-center gap-1 border rounded-full p-2 text-sm cursor-pointer
-  hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-in-out"
+  hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-in-out dark:hover:bg-white dark:hover:text-black"
             onClick={() => navigate("/create-blog")}
           >
             <Feather size={16} />
