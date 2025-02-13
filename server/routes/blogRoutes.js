@@ -5,7 +5,7 @@ const router=express.Router();
 import {createBlog,updateBlog,deleteBlog,readBlog,allBlogs} from "../controllers/blogController.js"
 
 // routes
-router.get("/",authentication, allBlogs);
+router.get("/", allBlogs);
 router.get("/:id", readBlog);
 router.post("/", createBlog);
 router.put("/:id", updateBlog);
