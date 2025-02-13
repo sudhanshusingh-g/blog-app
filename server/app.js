@@ -18,7 +18,7 @@ dbConnection()
 
 
 app.use('/api/blogs',blogRoutes)
-app.use('/api/user',userRoutes);
+app.use('/api/users',userRoutes);
 
 app.use(errorHandler)
 
