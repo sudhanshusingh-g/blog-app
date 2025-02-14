@@ -58,7 +58,7 @@ function CreateBlog() {
     };
 
     try {
-      await axios.post(import.meta.env.VITE_BACKEND_URL + "api/blog", payload);
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "blogs", payload);
       navigate("/");
       setFormData({
         title: "",

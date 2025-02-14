@@ -17,7 +17,7 @@ function BlogHomepage() {
         try {
 
             const response = await axios.get<Blog[]>(
-              import.meta.env.VITE_BACKEND_URL
+              import.meta.env.VITE_BACKEND_URL+"blogs"
             );
             
             setBlogList(response.data);

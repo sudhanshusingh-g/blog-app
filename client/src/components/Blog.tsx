@@ -25,7 +25,7 @@ function Blog() {
     setError(null);
     try {
       const response = await axios.get(
-        import.meta.env.VITE_BACKEND_URL + `api/blog/${id}`
+        import.meta.env.VITE_BACKEND_URL + `blogs/${id}`
       );
       const data = response.data;
       data.date = new Date(data.date);
@@ -42,7 +42,7 @@ function Blog() {
     if (!blog) return;
     try {
       const updatedFavs = blog.meta.favs + 1;
-      await axios.put(import.meta.env.VITE_BACKEND_URL + `api/blog/${id}`, {
+      await axios.put(import.meta.env.VITE_BACKEND_URL + `blogs/${id}`, {
         favs: updatedFavs,
       });
       setBlog({ ...blog, meta: { ...blog.meta, favs: updatedFavs } });
