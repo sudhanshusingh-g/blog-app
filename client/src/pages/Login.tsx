@@ -1,45 +1,50 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 function Login() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange=(e)=>{
-    setFormData({...formData,[e.target.name]:e.target.value});
-  }
-  const handleSubmit=(e)=>{
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     addFormData(formData);
-  }
+  };
 
-  const addFormData=async(formData)=>{
+  const addFormData = async (formData: FormData) => {
     try {
       setError(null);
       const response = await axios.post(
-        import.meta.env.VITE_BACKEND_URL + "users/login",
+        `${import.meta.env.VITE_BACKEND_URL}users/login`,
         formData
       );
       console.log(response.data);
       setFormData({
-        name: "",
         email: "",
         password: "",
       });
       navigate("/");
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
+    } catch (error: any) {
+      if (error.response?.data?.error) {
         setError(error.response.data.error);
       } else {
         setError("Login failed. Try again.");
       }
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center h-full">
@@ -76,10 +81,10 @@ function Login() {
           Login
         </button>
         <p>
-          New user ? <Link to={"/register"}>Register yourself</Link>
+          New user? <Link to="/register">Register yourself</Link>
         </p>
       </form>
-      <p className="text-red-700 text-sm">{error}</p>
+      {error && <p className="text-red-700 text-sm">{error}</p>}
     </div>
   );
 }

@@ -6,8 +6,8 @@ import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import EditBlog from "./components/EditBlog";
 import { ThemeProvider } from "./context/ThemeContext";
-import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
 function App() {
   return (
     <ThemeProvider>
@@ -18,8 +18,8 @@ function App() {
           <Route path="/blog/:id" element={<Blog />} />
           <Route path="/create-blog" element={<CreateBlog />} />
           <Route path="/edit-blog/:id" element={<EditBlog />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/login" element={<Login/>} />
         </Routes>
       </Layout>
     </ThemeProvider>
