@@ -7,8 +7,8 @@ import {createBlog,updateBlog,deleteBlog,readBlog,allBlogs} from "../controllers
 // routes
 router.get("/", allBlogs);
 router.get("/:id", readBlog);
-router.post("/",authentication ,createBlog);
-router.put("/:id", authentication,updateBlog);
-router.delete("/:id", authentication,deleteBlog);
+router.post("/",createBlog);
+router.put("/:id",updateBlog);
+router.delete("/:id",deleteBlog);
 
 export default router;
