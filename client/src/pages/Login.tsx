@@ -1,6 +1,8 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/slices/authSlice";
 
 interface FormData {
   email: string;
@@ -8,6 +10,9 @@ interface FormData {
 }
 
 function Login() {
+
+  const dispatch=useDispatch();
+
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -31,7 +36,12 @@ function Login() {
         `${import.meta.env.VITE_BACKEND_URL}users/login`,
         formData
       );
-      console.log(response.data);
+      if(response.data.token){
+        localStorage.setItem("token", response.data.token);
+        dispatch(
+          login({ user: response.data.user, token: response.data.token }) // Update Redux state
+        );
+      }
       setFormData({
         email: "",
         password: "",
@@ -55,6 +65,7 @@ function Login() {
             type="email"
             name="email"
             id="email"
+            autoComplete="on"
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter your email"
@@ -67,6 +78,7 @@ function Login() {
             type="password"
             name="password"
             id="password"
+            autoComplete="on"
             value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"

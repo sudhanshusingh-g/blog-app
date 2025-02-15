@@ -5,12 +5,10 @@ import About from "./components/About";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import EditBlog from "./components/EditBlog";
-import { ThemeProvider } from "./context/ThemeContext";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 function App() {
   return (
-    <ThemeProvider>
       <Layout>
         <Routes>
           <Route path="/" element={<BlogHomepage />} />
@@ -22,7 +20,6 @@ function App() {
           <Route path="/login" element={<Login/>} />
         </Routes>
       </Layout>
-    </ThemeProvider>
   );
 }
 
