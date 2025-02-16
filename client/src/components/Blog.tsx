@@ -1,8 +1,8 @@
-import axios from "axios";
 import { Heart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import { apiCall } from "../api/api";
 
 interface Blog {
   title: string;
@@ -24,15 +24,14 @@ function Blog() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        import.meta.env.VITE_BACKEND_URL + `blogs/${id}`
-      );
-      const data = response.data;
-      data.date = new Date(data.date);
-      setBlog(data);
+      const response=await apiCall<Blog>({
+        method:"GET",
+        url:`blogs/${id}`
+      })
+      response.date = new Date(response.date);
+      setBlog(response);
     } catch (err) {
       setError("Error fetching blog. Please try again later.");
-      console.error("Error fetching blog:", err);
     } finally {
       setLoading(false);
     }
@@ -42,8 +41,12 @@ function Blog() {
     if (!blog) return;
     try {
       const updatedFavs = blog.meta.favs + 1;
-      await axios.put(import.meta.env.VITE_BACKEND_URL + `blogs/${id}`, {
-        favs: updatedFavs,
+      await apiCall<Blog>({
+        method: "PUT",
+        url: `blogs/${id}`,
+        data: {
+          favs: updatedFavs,
+        },
       });
       setBlog({ ...blog, meta: { ...blog.meta, favs: updatedFavs } });
     } catch (err) {

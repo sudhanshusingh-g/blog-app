@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
-import axios from "axios";
+import { apiCall } from "../api/api";
 
 interface BlogFormData {
   title: string;
@@ -58,7 +58,11 @@ function CreateBlog() {
     };
 
     try {
-      await axios.post(import.meta.env.VITE_BACKEND_URL + "blogs", payload);
+      await apiCall<BlogFormData>({
+        method:"POST",
+        url:"blogs",
+        data:payload
+      });
       navigate("/");
       setFormData({
         title: "",

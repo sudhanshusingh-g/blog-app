@@ -3,9 +3,10 @@ import BlogCard from "./BlogCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DeleteModal from "./DeleteModal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../redux/store";
 
 interface Blog {
   _id: string;
@@ -20,7 +21,7 @@ function About() {
   const [deleteBlogId, setDeleteBlogId] = useState<string | null>(null);
   const dispatch=useDispatch();
   const navigate=useNavigate();
-
+  
   async function getAllBlogs() {
     try {
       const response = await axios.get<Blog[]>(import.meta.env.VITE_BACKEND_URL+"blogs");
