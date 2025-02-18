@@ -71,6 +71,7 @@ async function loginUser(req,res){
     const token = jwt.sign({ userId: existingUser._id }, SECRET_KEY, {
       expiresIn: "1h",
     });
+    
 
     res.status(200).json({
       message: "Login successful",

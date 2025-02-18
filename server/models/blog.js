@@ -9,11 +9,9 @@ const blogSchema = new mongoose.Schema({
     unique:true
   },
   author: {
-    type: String,
-    required: [true, "Author name is required"],
-    trim: true,
-    minLength: [3, "Title must be at least 3 characters"],
-    maxLength: [100, "Title must be less than 100 character"],
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'User',
+    required: [true, "Author is required"],
   },
   body: {
     type: String,
@@ -41,12 +39,65 @@ const blogSchema = new mongoose.Schema({
       default: 0,
     },
   },
+  status:{
+    type:String,
+    enum:['draft','published'],
+    default:'draft'
+  },
+  tags:[{
+    type:String,
+    trim:true
+  }],
+  comments:[{
+    user:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'User'
+    },
+    content:{
+      type:String,
+      required:true
+    },
+    date:{
+      type:Date,
+      default:Date.now
+    }
+  }]
+},{
+  timestamps:true
 });
 
 blogSchema.pre("save",function(next){
     this.title=this.title.charAt(0).toUpperCase()+this.title.slice(1);
     next();
 });
+blogSchema.post('save',async function(doc){
+  if(this.isNew){
+    const User=mongoose.model("User");
+    await User.findByIdAndUpdate(
+      this.author,
+      {$addToSet:{blogs:this._id}}
+    )
+  }
+});
+
+blogSchema.pre('remove',async function(next){
+  const User=mongoose.model('User');
+  await User.findByIdAndUpdate(this.author, { $pull: { blogs: this._id } });
+  next();
+})
+
+blogSchema.methods.publish = function () {
+  this.status = "published";
+  return this.save();
+};
+
+blogSchema.methods.addComment = function (userId, content) {
+  this.comments.push({ user: userId, content });
+  return this.save();
+};
+blogSchema.statics.findByAuthor = function (authorId) {
+  return this.find({ author: authorId }).populate("author", "name email image");
+};
 
 const Blog=mongoose.model('Blog',blogSchema)
 

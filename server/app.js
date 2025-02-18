@@ -14,7 +14,7 @@ app.use(cors());
 const port = process.env.PORT || 3000;
 
 // connecting db
-dbConnection()
+dbConnection();
 
 
 app.use('/api/blogs',blogRoutes)

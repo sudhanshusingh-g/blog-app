@@ -21,6 +21,30 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "https://placehold.co/400",
   },
+  blogs:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Blog'
+  }]
+},{
+  timestamps:true,
+  toJSON:{virtuals:true},
+  toObject:{virtuals:true}
 });
+
+// userSchema.virtual('total_blogs').get(function(){
+//   return this.blogs.length;
+// });
+
+userSchema.methods.addBlog=function(blogId){
+  if(!this.blogs.includes(blogId)){
+    this.blogs.push(blogId);
+  }
+  return this.save();
+}
+
+userSchema.methods.removeBlog = function (blogId) {
+  this.blogs=this.blogs.filter(blog=>blog.toString() !== blogId.toString());
+  return this.save();
+};
 
 export default mongoose.model("User",userSchema);

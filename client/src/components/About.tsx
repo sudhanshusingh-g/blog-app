@@ -1,4 +1,3 @@
-// import { SiGmail, SiLinkedin, SiGithub } from "react-icons/si";
 import BlogCard from "./BlogCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -12,19 +11,24 @@ interface Blog {
   _id: string;
   title: string;
   body: string;
-  hidden:boolean;
+  hidden: boolean;
+  author: string;
 }
 
 function About() {
   const [blogList, setBlogList] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [deleteBlogId, setDeleteBlogId] = useState<string | null>(null);
-  const dispatch=useDispatch();
-  const navigate=useNavigate();
-  
-  async function getAllBlogs() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  async function getUserBlogs() {
     try {
-      const response = await axios.get<Blog[]>(import.meta.env.VITE_BACKEND_URL+"blogs");
+      if (!user) return;
+      const response = await axios.get<Blog[]>(
+        `${import.meta.env.VITE_BACKEND_URL}blogs?author=${user.name}`
+      );
       setBlogList(response.data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -35,9 +39,7 @@ function About() {
 
   async function handleDeleteBlog(blogId: string) {
     try {
-      await axios.delete(
-        import.meta.env.VITE_BACKEND_URL + `blogs/${blogId}`
-      );
+      await axios.delete(import.meta.env.VITE_BACKEND_URL + `blogs/${blogId}`);
       setBlogList(blogList.filter((blog) => blog._id !== blogId));
       setDeleteBlogId(null);
     } catch (error) {
@@ -46,22 +48,35 @@ function About() {
   }
 
   useEffect(() => {
-    getAllBlogs();
-  }, []);
+    getUserBlogs();
+  }, [user]);
 
-  const handleLogOut=()=>{
+  const handleLogOut = () => {
     dispatch(logout());
     localStorage.removeItem("token");
     navigate("/");
-  }
+  };
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold mt-8">Recent Blogs</h3>
+      <h3 className="text-2xl font-semibold mt-8">User Information</h3>
+      {user ? (
+        <div className="p-4 border rounded-md shadow-md mb-6">
+          <p>
+            <strong>Name:</strong> {user.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+        </div>
+      ) : (
+        <p>Please log in to view your information.</p>
+      )}
+
+      <h3 className="text-2xl font-semibold mt-8">My Blogs</h3>
       <button
-        className="flex items-center gap-1 shadow-md rounded px-2 py-1 text-sm cursor-pointer
-  hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-in-out dark:hover:bg-white dark:hover:text-black"
-      onClick={handleLogOut}
+        className="flex items-center gap-1 shadow-md rounded px-2 py-1 text-sm cursor-pointer hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-in-out dark:hover:bg-white dark:hover:text-black"
+        onClick={handleLogOut}
       >
         Logout
       </button>
@@ -71,15 +86,13 @@ function About() {
         <p>No blogs available.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {blogList
-            .filter((blog) => !blog.hidden)
-            .map((blog) => (
-              <BlogCard
-                key={blog._id}
-                blog={blog}
-                onDelete={() => setDeleteBlogId(blog._id)}
-              />
-            ))}
+          {blogList.map((blog) => (
+            <BlogCard
+              key={blog._id}
+              blog={blog}
+              onDelete={() => setDeleteBlogId(blog._id)}
+            />
+          ))}
         </div>
       )}
 
