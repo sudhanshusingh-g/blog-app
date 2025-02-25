@@ -1,5 +1,5 @@
 import Blog from "../models/blog.js";
-// import User from "../models/user.js";
+import User from "../models/user.js";
 
 // all blog
 async function allBlogs(req, res) {
@@ -15,9 +15,12 @@ async function allBlogs(req, res) {
 // create blog function
 async function createBlog(req, res) {
   try {
-    const { title, body, tags, hidden, status } = req.body;
-    const author = req.user.id;
-
+    const { title, body, tags } = req.body;
+    const author = req.userId;
+    const authorUser=await User.findById(author);
+    if (!authorUser) {
+      return res.status(404).json({ error: "Author not found" });
+    }
     const existingBlog = await Blog.findOne({ title });
 
     if (existingBlog) {
@@ -27,17 +30,11 @@ async function createBlog(req, res) {
       title,
       author,
       body,
-      hidden: hidden || false,
-      status: status || "draft",
       tags: tags || [],
-      meta: {
-        votes: 0,
-        favs: 0,
-      },
     });
 
     await new_blog.save();
-    await new_blog.populate("author", "name email image");
+    await authorUser.addBlog(new_blog._id);
     res.status(201).json({
       message: "Blog created successfully",
       blog: new_blog,

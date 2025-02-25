@@ -63,21 +63,24 @@ blogSchema.pre("save",function(next){
     this.title=this.title.charAt(0).toUpperCase()+this.title.slice(1);
     next();
 });
-blogSchema.post('save',async function(doc){
-  if(doc.isNew){
-    const User=mongoose.model("User");
-    await User.findOneAndUpdate(
-      this.author,
-      {$addToSet:{blogs:this._id}}
-    )
+blogSchema.post("save", async function (doc) {
+  if (doc.isNew) {
+    const User = mongoose.model("User");
+    await User.findByIdAndUpdate(
+      doc.author,
+      { $addToSet: { blogs: doc._id } }, 
+      { new: true }
+    );
   }
 });
 
-blogSchema.pre('remove',async function(next){
-  const User=mongoose.model('User');
-  await User.findOneAndUpdate(this.author, { $pull: { blogs: this._id } });
+
+blogSchema.pre("remove", async function (next) {
+  const User = mongoose.model("User");
+  await User.findByIdAndUpdate(this.author, { $pull: { blogs: this._id } });
   next();
-})
+});
+
 
 
 blogSchema.methods.addComment = function (userId, content) {

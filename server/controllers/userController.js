@@ -105,5 +105,37 @@ async function logoutUser(req, res) {
   }
 }
 
+// current user
+async function getCurrentUser(req, res) {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id)
+      .populate({
+        path: "blogs",
+        select: "title body createdAt", // Select fields you want to show
+      })
+      .exec();
+    
 
-export {registerUser,loginUser,logoutUser}
+    if (!user) {
+      return res.status(404).json({ error: "No user found. Please register." });
+    }
+
+    const { email, name, image, blogs } = user;
+
+    res.json({
+      user: {
+        email,
+        name,
+        image,
+        blogs,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+export {registerUser,loginUser,logoutUser,getCurrentUser}
