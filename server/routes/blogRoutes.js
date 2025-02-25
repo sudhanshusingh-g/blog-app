@@ -19,10 +19,10 @@ router.get("/user/blogs", authentication, getUserBlogs);
 router.get("/user/:userId/blogs", getUserBlogs);
 
 router.post("/", authentication, createBlog);
-router.post("/blogs/:id/comments", authentication, addComment);
-router.post("/blogs/:id/publish", authentication, publishBlog);
+router.post("/:id/comments", authentication, addComment);
+router.post("/:id/publish", authentication, publishBlog);
 
-router.put("/blogs/:id", authentication, updateBlog);
-router.delete("/blogs/:id", authentication, deleteBlog);
+router.put("/:id", authentication, updateBlog);
+router.delete("/:id", authentication, deleteBlog);
 
 export default router;

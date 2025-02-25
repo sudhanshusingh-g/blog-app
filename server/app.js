@@ -6,10 +6,12 @@ import chalk from "chalk";
 import blogRoutes from "./routes/blogRoutes.js"
 import errorHandler from "./middlewares/errorHandling.js";
 import userRoutes from "./routes/userRoutes.js"
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app=express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 const port = process.env.PORT || 3000;
 

@@ -19,7 +19,9 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: "https://placehold.co/400",
+    default: function(){
+      return `https://ui-avatars.com/api/?name=${this.name}&background=random&color=fff`;
+    },
   },
   blogs:[{
     type:mongoose.Schema.Types.ObjectId,
@@ -27,13 +29,8 @@ const userSchema = new mongoose.Schema({
   }]
 },{
   timestamps:true,
-  toJSON:{virtuals:true},
-  toObject:{virtuals:true}
 });
 
-// userSchema.virtual('total_blogs').get(function(){
-//   return this.blogs.length;
-// });
 
 userSchema.methods.addBlog=function(blogId){
   if(!this.blogs.includes(blogId)){

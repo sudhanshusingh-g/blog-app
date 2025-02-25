@@ -1,5 +1,5 @@
 import Blog from "../models/blog.js";
-import User from "../models/user.js";
+// import User from "../models/user.js";
 
 // all blog
 async function allBlogs(req, res) {
@@ -113,18 +113,18 @@ async function updateBlog(req, res) {
 async function deleteBlog(req, res) {
   try {
     const blogId = req.params.id;
-    const userId = req.user.id; // From auth middleware
-
     const blog = await Blog.findById(blogId);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
-
-    if (blog.author.toString() !== userId) {
-      return res.status(403).json({ error: "Not authorized to delete this blog" });
+    // Check if the logged-in user is the author of the blog
+    if (blog.author.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this blog" });
     }
 
-    await blog.remove(); // This triggers the pre-remove middleware
+    await blog.deleteOne(); // This triggers the pre-remove middleware
 
     res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {

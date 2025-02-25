@@ -72,15 +72,38 @@ async function loginUser(req,res){
       expiresIn: "1h",
     });
     
+    res.cookie("token",token,{httpOnly:true}).send({
+      success:true,
+      message:"Logged in successfuully."
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// logout user
+async function logoutUser(req, res) {
+  try {
+    // Check if token exists
+    if (!req.cookies.token) {
+      return res.status(400).json({ error: "No active session found" });
+    }
+
+    // Clear the token cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
+      sameSite: "Strict",
+    });
 
     res.status(200).json({
-      message: "Login successful",
-      token,
-      existingUser,
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
-export {registerUser,loginUser}
+
+export {registerUser,loginUser,logoutUser}
