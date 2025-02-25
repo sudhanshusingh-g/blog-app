@@ -1,13 +1,2 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-
-body{
-    scroll-behavior: smooth;
-}
-
-@layer base{
-    .no-scrollbar::-webkit-scrollbar {
-          display: none;
-      }
-}
-
