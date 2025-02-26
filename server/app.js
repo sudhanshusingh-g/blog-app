@@ -23,7 +23,7 @@ const port = process.env.PORT || 3000;
 // connecting db
 dbConnection();
 
-
+// routes
 app.use('/api/blogs',blogRoutes)
 app.use('/api/users',userRoutes);
 
