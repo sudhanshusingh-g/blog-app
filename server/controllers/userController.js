@@ -108,11 +108,11 @@ async function logoutUser(req, res) {
 // current user
 async function getCurrentUser(req, res) {
   try {
-    const id = req.params.id;
+    const id = req.userId;
     const user = await User.findById(id)
       .populate({
         path: "blogs",
-        select: "title body createdAt", // Select fields you want to show
+        select: "title body createdAt", 
       })
       .exec();
     

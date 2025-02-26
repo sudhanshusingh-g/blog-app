@@ -8,46 +8,23 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Protected from "./components/Protected";
 import SingleBlog from "./pages/SingleBlog";
+import Redirect from "./components/Redirect";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route
-        path="/:id"
-        element={
-          <Protected>
-            <SingleBlog />
-          </Protected>
-        }
-      />
+      <Route path="/blog/:id" element={<SingleBlog />} />
 
-      <Route
-        path="/about"
-        element={
-          <Protected>
-            <About />
-          </Protected>
-        }
-      />
-      <Route
-        path="/edit"
-        element={
-          <Protected>
-            <EditBlog />
-          </Protected>
-        }
-      />
-      <Route
-        path="/create"
-        element={
-          <Protected>
-            <PostBlog />
-          </Protected>
-        }
-      />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route element={<Protected />}>
+        <Route path="/about" element={<About />} />
+        <Route path="/edit" element={<EditBlog />} />
+        <Route path="/create" element={<PostBlog />} />
+      </Route>
+      <Route element={<Redirect />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
