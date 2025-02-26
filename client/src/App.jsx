@@ -13,9 +13,10 @@ import Redirect from "./components/Redirect";
 function App() {
   return (
     <Routes>
+      {/*  */}
       <Route path="/" element={<Home />} />
       <Route path="/blog/:id" element={<SingleBlog />} />
-
+{/* Protected Route */}
       <Route element={<Protected />}>
         <Route path="/about" element={<About />} />
         <Route path="/edit" element={<EditBlog />} />
