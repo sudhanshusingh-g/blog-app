@@ -16,7 +16,7 @@ function App() {
       {/*  */}
       <Route path="/" element={<Home />} />
       <Route path="/blog/:id" element={<SingleBlog />} />
-{/* Protected Route */}
+      {/* Protected Route */}
       <Route element={<Protected />}>
         <Route path="/about" element={<About />} />
         <Route path="/edit" element={<EditBlog />} />
