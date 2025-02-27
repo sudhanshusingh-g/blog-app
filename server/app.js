@@ -15,6 +15,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "https://blog-app-1saf.onrender.com",
+    // origin:"http://localhost:5173",
     credentials: true,
   })
 );

@@ -25,14 +25,13 @@ const Home = () => {
       console.error(error);
     }
   };
-  console.log(blog);
 
   useEffect(() => {
     fetchBlogs();
   }, []);
 
   return (
-    <div className="min-h-screen w-full p-6">
+    <div className=" w-full p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-black dark:text-white mb-6">
           Explore Blogs

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const dispatch = useDispatch();
-  const { user, loading, error } = useSelector((state) => state.user);
+  const { user, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,19 +49,31 @@ const About = () => {
     );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800 text-black dark:text-white p-6">
-      <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md w-96 text-center">
-        <h2 className="text-2xl font-bold mb-4">About Page</h2>
-        <p className="text-lg font-medium">Welcome, {user.name}!</p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Email: {user.email}
-        </p>
+    <div className="p-6 flex flex-col space-y-8">
+      <div className="flex items-center w-full justify-between">
+        <div>
+          <img src={user.user.image} alt={user.user.name} 
+          className="w-24 h-24 rounded-full"
+          />
+          <p className="text-lg font-medium">Welcome, {user.user.name}!</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {user.user.email}
+          </p>
+        </div>
         <button
           onClick={handleLogout}
-          className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition duration-300"
+          className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg cursor-pointer transition duration-300"
         >
           Logout
         </button>
+      </div>
+      <div>
+        <h1 className="text-xl font-semibold">Published Blogs</h1>
+        {user.user.blogs.map((b) => (
+          <div key={b._id} className="mt-4 shadow-md p-4 dark:shadow-blue-200/40 rounded cursor-pointer">
+            <h1>{b.title}</h1>
+          </div>
+        ))}
       </div>
     </div>
   );
