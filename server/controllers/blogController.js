@@ -115,7 +115,7 @@ async function deleteBlog(req, res) {
       return res.status(404).json({ error: "Blog not found" });
     }
     // Check if the logged-in user is the author of the blog
-    if (blog.author.toString() !== req.user.userId) {
+    if (blog.author.toString() !== req.userId) {
       return res
         .status(403)
         .json({ error: "You are not authorized to delete this blog" });
@@ -134,7 +134,7 @@ async function addComment(req, res) {
   try {
     const { content } = req.body;
     const blogId = req.params.id;
-    const userId = req.user.id; // From auth middleware
+    const userId = req.userId; // From auth middleware
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
