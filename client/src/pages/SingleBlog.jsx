@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getBlog } from "../api/blog";
+import { useNavigate, useParams } from "react-router-dom";
+import { addComment, getBlog,deleteBlog } from "../api/blog";
 import { setError } from "../redux/slices/blogSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {  BsHeartFill } from "react-icons/bs";
+import { CiHeart } from "react-icons/ci";
+import { IoChatbubblesOutline, IoSend } from "react-icons/io5";
+import DeleteDialog from "../components/DeleteDialog";
+
 
 function SingleBlog() {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [comment, setComment] = useState("");
+  const [commentContent, setCommentContent] = useState("");
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const getCurrentBlog = async () => {
     try {
@@ -27,35 +35,60 @@ function SingleBlog() {
     }
   };
 
+  //Post Comment
+  const postComment = async () => {
+    if (!commentContent.trim()) return; // Prevent empty comments
+
+    try {
+      const response = await addComment(id, commentContent); // Use blog ID
+      if (response.error) {
+        console.error(response.message);
+      } else {
+        setCommentContent(""); // Clear input after posting
+        getCurrentBlog(); // Refresh comments after posting
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Function to delete a blog
+  const handleDeleteBlog = async () => {
+    try {
+      const response = await deleteBlog(id); // This now refers to the imported function
+      if (!response.error) {
+        navigate("/"); // Redirect after deletion
+      } else {
+        console.error("Failed to delete:", response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+    }
+  };
+
   useEffect(() => {
     getCurrentBlog();
   }, [id]);
 
-  // Handle new comment submission
-  const handleAddComment = () => {
-    if (comment.trim() === "") return;
-
-    const newComment = {
-      text: comment,
-      id: new Date().getTime(), // Temporary ID
-    };
-
-    setBlog((prevBlog) => ({
-      ...prevBlog,
-      comments: [...(prevBlog?.comments || []), newComment.text], // Append new comment
-    }));
-
-    setComment(""); // Clear input field
-  };
-
   return (
-    <section className="w-full  mx-auto p-6">
+    <section className="w-full  mx-auto px-6">
       {loading ? (
         <div className="text-center py-10 text-lg font-semibold">
           Loading...
         </div>
       ) : blog ? (
         <>
+          <div className="  flex items-center justify-end space-x-4">
+            <button className="bg-blue-600 text-white rounded px-4 py-2 cursor-pointer hover:bg-blue-700">
+              Edit
+            </button>
+            <button
+              className="bg-rose-600 text-white rounded px-4 py-2 cursor-pointer hover:bg-rose-700"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Delete
+            </button>
+          </div>
           {/* Blog Image */}
           <div className="w-full h-60 rounded-lg overflow-hidden mb-4">
             <img
@@ -86,9 +119,7 @@ function SingleBlog() {
           </div>
 
           {/* Blog Content */}
-          <div className="mt-6 text-lg leading-relaxed ">
-            {blog?.body}
-          </div>
+          <div className="mt-6 text-lg leading-relaxed ">{blog?.body}</div>
 
           {/* Tags */}
           {blog?.tags?.length > 0 && (
@@ -103,41 +134,75 @@ function SingleBlog() {
               ))}
             </div>
           )}
+          <hr className="mt-4" />
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              {blog.reactions ? (
+                <span className="cursor-pointer">
+                  <CiHeart size={24} />
+                </span>
+              ) : (
+                <BsHeartFill color="red" size={24} />
+              )}
+              <span className="cursor-pointer">
+                <IoChatbubblesOutline size={24} />
+              </span>
+            </div>
+            <p>{blog.comments.length} comments</p>
+          </div>
 
           {/* Comments Section */}
-          <div className="mt-8">
-            <h2 className="text-2xl font-semibold">
-              Comments ({blog?.comments?.length})
-            </h2>
-            <div className="mt-4 bg-gray-100 p-4 rounded-lg">
-              {blog?.comments?.length > 0 ? (
-                blog.comments.map((comment, i) => (
-                  <div key={i} className="border-b py-2">
-                    <p className="text-gray-800">{comment}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No comments yet.</p>
-              )}
+          {blog.comments.map((comment) => (
+            <div className="flex items-center space-x-4 p-4" key={comment._id}>
+              <img
+                src={comment.user.image}
+                alt={comment.user.name}
+                className="rounded-full h-9 w-9"
+              />
+              <div>
+                <p className="font-semibold text-sm">{comment.user.name}</p>
+                <p>{comment.content}</p>
+              </div>
             </div>
-
-            {/* Add Comment Section */}
-            <div className="mt-6">
-              <textarea
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="3"
-                placeholder="Write a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              ></textarea>
-              <button
-                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={handleAddComment}
+          ))}
+          {user ? (
+            <div className="flex items-center space-x-4">
+              <img
+                src={user.user.image}
+                alt={user.user.name}
+                className="rounded-full h-9 w-9"
+              />
+              <input
+                type="text"
+                placeholder="Add comment"
+                className="border rounded indent-1 p-4 w-[80%]"
+                onChange={(e) => setCommentContent(e.target.value)}
+                value={commentContent}
+              />
+              <div
+                className="bg-blue-600 cursor-pointer hover:bg-blue-700 p-4 rounded-full"
+                onClick={postComment}
               >
-                Add Comment
+                <IoSend size={24} color="white" />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <p>Please login to comment</p>
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer rounded py-2 px-6"
+              >
+                Login
               </button>
             </div>
-          </div>
+          )}
+
+          <DeleteDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={() => setIsDeleteDialogOpen(false)}
+            onConfirm={handleDeleteBlog}
+          />
         </>
       ) : (
         <p className="text-center text-red-500">Blog not found.</p>

@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen">
       {/* Navbar */}
-      <nav className=" py-2 px-4  shadow-md  dark:border-b-[1px]">
+      <nav className=" py-4 px-6  shadow-md  dark:border-b-[1px]">
         <div className="mx-auto flex justify-between items-center">
           <button onClick={() => toggleTheme()} className="cursor-pointer">
             {theme === "dark" ? <BsMoonStars size={24} /> : <FiSun size={24} color="orange"/>}

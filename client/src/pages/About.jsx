@@ -70,7 +70,9 @@ const About = () => {
       <div>
         <h1 className="text-xl font-semibold">Published Blogs</h1>
         {user.user.blogs.map((b) => (
-          <div key={b._id} className="mt-4 shadow-md p-4 dark:shadow-blue-200/40 rounded cursor-pointer">
+          <div key={b._id} className="mt-4 shadow-md p-4 dark:shadow-blue-200/40 rounded cursor-pointer"
+          onClick={()=>navigate(`/blog/${b._id}`)}
+          >
             <h1>{b.title}</h1>
           </div>
         ))}
