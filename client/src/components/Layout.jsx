@@ -25,7 +25,7 @@ const Layout = ({ children }) => {
               Login/Signup
             </button>
           ) : (
-            <ul className="hidden md:flex space-x-4">
+            <ul className="flex space-x-4">
               <li>
                 <Link to={"/"} className="hover:underline">
                   Home

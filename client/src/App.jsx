@@ -19,7 +19,7 @@ function App() {
       {/* Protected Route */}
       <Route element={<Protected />}>
         <Route path="/about" element={<About />} />
-        {/* <Route path="/edit/:id" element={<EditBlog />} /> */}
+        <Route path="/edit/:id" element={<EditBlog />} />
         <Route path="/create" element={<PostBlog />} />
       </Route>
       <Route element={<Redirect />}>

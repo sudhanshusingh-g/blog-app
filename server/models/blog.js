@@ -25,10 +25,11 @@ const blogSchema = new mongoose.Schema(
       default: "active",
     },
     reactions: {
-      type:Number,
-      default:0,
-      min:0
+      type: Number,
+      default: 0,
+      min: 0,
     },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     tags: [
       {
         type: String,

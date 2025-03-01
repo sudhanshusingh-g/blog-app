@@ -59,53 +59,64 @@ async function readBlog(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-// Update blog
+// Update Blog
 async function updateBlog(req, res) {
   try {
-    const { title, body, tags, hidden, status } = req.body;
+    const { title, body, tags, status } = req.body;
     const blogId = req.params.id;
-    const userId = req.user.id; // From auth middleware
+    const userId = req.userId; // From auth middleware
 
-    // Find blog and check ownership
+    // Find the blog by ID
     const blog = await Blog.findById(blogId);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
 
+    // Check if the user is the author of the blog
     if (blog.author.toString() !== userId) {
       return res.status(403).json({ error: "Not authorized to update this blog" });
     }
 
-    // If title is being updated, check for duplicates
+    // If title is provided and different, check for duplicates
     if (title && title !== blog.title) {
-      const existingBlog = await Blog.findOne({ title });
+      const existingBlog = await Blog.findOne({ title }).lean();
       if (existingBlog) {
-        return res.status(409).json({ error: "Blog title already exists" });
+        return res.status(409).json({ error: "A blog with this title already exists" });
       }
     }
 
+    // Ensure tags are lowercase and trimmed
+    const formattedTags = tags ? tags.map(tag => tag.toLowerCase().trim()) : blog.tags;
+
+    // Ensure status is valid (optional, defaulting to existing)
+    const validStatus = status && ["active", "inactive"].includes(status) ? status : blog.status;
+
+    // Prepare update fields
+    const updateFields = {
+      ...(title && { title }),
+      ...(body && { body }),
+      ...(tags && { tags: formattedTags }),
+      ...(status && { status: validStatus }),
+    };
+
+    // Update the blog and return the new document
     const updatedBlog = await Blog.findByIdAndUpdate(
       blogId,
-      {
-        $set: {
-          title: title || blog.title,
-          body: body || blog.body,
-          tags: tags || blog.tags,
-          hidden: hidden !== undefined ? hidden : blog.hidden,
-          status: status || blog.status
-        }
-      },
+      { $set: updateFields },
       { new: true, runValidators: true }
-    ).populate('author', 'name email image');
+    ).populate("author", "name email image");
 
     res.status(200).json({
       message: "Blog updated successfully",
-      blog: updatedBlog
+      blog: updatedBlog,
     });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error updating blog:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 // Delete blog
 async function deleteBlog(req, res) {
   try {
@@ -188,6 +199,42 @@ async function getUserBlogs(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+export const toggleLike = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const userId = req.userId; // From authentication middleware
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    const hasLiked = blog.likedBy.includes(userId);
+
+    if (hasLiked) {
+      // Unlike the blog
+      blog.likedBy = blog.likedBy.filter((id) => id.toString() !== userId);
+      blog.reactions -= 1;
+    } else {
+      // Like the blog
+      blog.likedBy.push(userId);
+      blog.reactions += 1;
+    }
+
+    await blog.save();
+
+    res.status(200).json({
+      message: hasLiked ? "Like removed" : "Like added",
+      reactions: blog.reactions,
+      likedBy: blog.likedBy,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 export { 
   createBlog, 

@@ -31,15 +31,16 @@ export const addComment=async(blogId,content)=>{
   }
 }
 
-export const addLikes = async (id) => {
+export const toggleLike = async (id) => {
   try {
-    const response = await api.post(`/blogs/${id}/comments`, content);
+    const response = await api.post(`/blogs/${id}/like`);
     return response.data;
   } catch (error) {
-        console.error(error);
-        return { error: true, message: "Failed to add likes" };
+    console.error(error);
+    return { error: true, message: "Failed to like/unlike blog" };
   }
 };
+
 
 export const deleteBlog = async (id) => {
   try {
@@ -56,3 +57,19 @@ export const deleteBlog = async (id) => {
     };
   }
 };
+export const updateBlog = async (id, blogData) => {
+  try {
+    const response = await api.put(`/blogs/${id}`, blogData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error updating blog:",
+      error.response?.data || error.message
+    );
+    return {
+      error: true,
+      message: error.response?.data?.message || "Failed to update blog",
+    };
+  }
+};
+
