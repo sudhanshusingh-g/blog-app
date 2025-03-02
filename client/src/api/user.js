@@ -8,7 +8,7 @@ export const login=async (values)=>{
         console.error(error);
     }
 }
-
+//register
 export const signup = async (values) => {
   try {
     const response = await api.post("/users/register", values);
