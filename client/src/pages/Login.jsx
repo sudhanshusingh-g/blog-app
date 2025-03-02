@@ -27,6 +27,7 @@ const Login = () => {
 
    try {
      const response = await login(formData);
+     console.log(response);
      if (response.success) {
        const activeUser = await currentuser();
        dispatch(setUser(activeUser));
