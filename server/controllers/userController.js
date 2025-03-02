@@ -125,6 +125,7 @@ async function getCurrentUser(req, res) {
 
     res.json({
       user: {
+        id,
         email,
         name,
         image,

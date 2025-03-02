@@ -14,10 +14,11 @@ function App() {
   return (
     <Routes>
       {/*  */}
-      <Route path="/" element={<Home />} />
       <Route path="/blog/:id" element={<SingleBlog />} />
       {/* Protected Route */}
       <Route element={<Protected />}>
+        <Route path="/" element={<Home />} />
+
         <Route path="/about" element={<About />} />
         <Route path="/edit/:id" element={<EditBlog />} />
         <Route path="/create" element={<PostBlog />} />

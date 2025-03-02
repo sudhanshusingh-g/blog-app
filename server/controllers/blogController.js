@@ -15,7 +15,7 @@ async function allBlogs(req, res) {
 // create blog function
 async function createBlog(req, res) {
   try {
-    const { title, body, tags } = req.body;
+    const { title, body, tags,status } = req.body;
     const author = req.userId;
     const authorUser=await User.findById(author);
     if (!authorUser) {
@@ -31,13 +31,18 @@ async function createBlog(req, res) {
       author,
       body,
       tags: tags || [],
+      status
     });
 
     await new_blog.save();
     await authorUser.addBlog(new_blog._id);
+    const populatedBlog = await Blog.findById(new_blog._id).populate(
+      "author",
+      "name image"
+    );
     res.status(201).json({
       message: "Blog created successfully",
-      blog: new_blog,
+      blog: populatedBlog,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -163,31 +168,7 @@ async function addComment(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-// Publish blog
-async function publishBlog(req, res) {
-  try {
-    const blogId = req.params.id;
-    const userId = req.user.id; // From auth middleware
 
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      return res.status(404).json({ error: "Blog not found" });
-    }
-
-    if (blog.author.toString() !== userId) {
-      return res.status(403).json({ error: "Not authorized to publish this blog" });
-    }
-
-    await blog.publish();
-
-    res.status(200).json({
-      message: "Blog published successfully",
-      blog
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
 // Get user's blogs
 async function getUserBlogs(req, res) {
   try {
@@ -243,6 +224,5 @@ export {
   deleteBlog, 
   allBlogs,
   addComment,
-  publishBlog,
   getUserBlogs
 };

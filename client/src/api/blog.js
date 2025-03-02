@@ -73,3 +73,13 @@ export const updateBlog = async (id, blogData) => {
   }
 };
 
+// Create a new blog
+export const createBlog = async (blogData) => {
+  try {
+    const response = await api.post("/blogs/", blogData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating blog:", error.response?.data || error.message);
+    return { error: true, message: error.response?.data?.message || "Failed to create blog" };
+  }
+};

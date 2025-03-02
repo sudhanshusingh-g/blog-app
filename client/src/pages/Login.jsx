@@ -21,27 +21,29 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch(setLoading());
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   dispatch(setLoading());
 
-    try {
-      const response = await login(formData);
-      if (response.success) {
-        const activeUser = await currentuser();
-        dispatch(setUser(activeUser));
-        navigate("/");
-      } else {
-        dispatch(setError(response.message || "Login failed. Try again."));
-      }
-    } catch (err) {
-      dispatch(
-        setError(err.response?.data?.message || "Login failed. Try again.")
-      );
-    } finally {
-      setFormData({ email: "", password: "" });
-    }
-  };
+   try {
+     const response = await login(formData);
+     if (response.success) {
+       const activeUser = await currentuser();
+       console.log("Active User:", activeUser); // Debugging
+       dispatch(setUser(activeUser));
+       navigate("/");
+     } else {
+       dispatch(setError(response.message || "Login failed. Try again."));
+     }
+   } catch (err) {
+     dispatch(
+       setError(err.response?.data?.message || "Login failed. Try again.")
+     );
+   } finally {
+     setFormData({ email: "", password: "" });
+   }
+ };
+
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen transition-all">

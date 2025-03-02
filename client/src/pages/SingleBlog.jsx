@@ -10,7 +10,7 @@ import DeleteDialog from "../components/DeleteDialog";
 
 function SingleBlog() {
   const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ function SingleBlog() {
   const navigate = useNavigate();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
-
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     getCurrentBlog();
@@ -39,38 +39,45 @@ function SingleBlog() {
       setLoading(false);
     }
   };
+const handleLike = async () => {
+  if (!user?.user) {
+    alert("Please login to like this blog.");
+    return;
+  }
 
-  const handleLike = async () => {
-    if (!user) {
-      alert("Please login to like this blog.");
-      return;
-    }
-
+  try {
     const response = await toggleLike(id);
-    if (!response.error) {
+
+    if (response && response.likedBy !== undefined) {
       setBlog((prevBlog) => ({
         ...prevBlog,
         reactions: response.reactions,
-        likedBy: response.likedBy, // Update liked users
+        likedBy: [...response.likedBy], // Ensure a new array reference
       }));
     } else {
-      console.error("Failed to like/unlike blog");
+      console.error("Failed to like/unlike blog:", response.message);
     }
-  };
+  } catch (error) {
+    console.error("Error liking/unliking blog:", error);
+  }
+};
+
+
+
 
   const postComment = async () => {
-    if (!user) {
+    if (!user?.user) {
       alert("Please login to comment.");
       return;
     }
 
-    if (!commentContent.trim()) return; // Prevent empty comments
+    if (!commentContent.trim()) return;
 
     try {
       const response = await addComment(id, commentContent);
       if (!response.error) {
-        setCommentContent(""); // Clear input
-        getCurrentBlog(); // Refresh comments
+        setCommentContent("");
+        getCurrentBlog();
       } else {
         console.error(response.message);
       }
@@ -83,7 +90,7 @@ function SingleBlog() {
     try {
       const response = await deleteBlog(id);
       if (!response.error) {
-        navigate("/"); // Redirect after deletion
+        navigate("/");
       } else {
         console.error("Failed to delete:", response.message);
       }
@@ -91,19 +98,22 @@ function SingleBlog() {
       console.error("Error deleting blog:", error);
     }
   };
+const hasUserLiked = blog?.likedBy?.some((u) => u === user?.user?.id);
 
-  const hasUserLiked = user && blog?.likedBy?.includes(user._id);
+
+
 
   return (
-    <section className="w-full mx-auto px-6">
-      {loading & user ? (
+    <section className="h-full">
+      {loading ? (
         <div className="text-center py-10 text-lg font-semibold">
           Loading...
         </div>
       ) : blog ? (
         <>
-          {user?._id === blog?.author?._id && (
-            <div className="flex items-center justify-end space-x-4">
+          {/* Edit & Delete Buttons (Only for Blog Author) */}
+          {user?.user?.email === blog?.author?.email && (
+            <div className="flex items-center justify-end space-x-4 my-4">
               <button
                 className="bg-blue-600 text-white rounded px-4 py-2 cursor-pointer hover:bg-blue-700"
                 onClick={() => navigate(`/edit/${blog._id}`)}
@@ -119,40 +129,39 @@ function SingleBlog() {
             </div>
           )}
 
-          <div className="w-full h-60 rounded-lg overflow-hidden mb-4">
-            <img
-              src={blog?.image || "https://placehold.co/800x400"}
-              alt={blog?.title || "Blog Image"}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {/* Blog Title */}
+          <h1 className="text-4xl font-bold my-4">{blog?.title}</h1>
 
-          <h1 className="text-4xl font-bold">{blog?.title}</h1>
-
-          <div className="flex items-center mt-3 space-x-3 text-gray-400">
+          {/* Author Info */}
+          <div className="flex items-center my-2 space-x-3 text-gray-400">
             <img
-              src={blog?.author?.image || "https://placehold.co/50"}
+              src={blog?.author?.image}
               alt={blog?.author?.name || "Author"}
-              className="w-10 h-10 rounded-full"
+              className="w-7 h-7 rounded-full"
             />
             <div>
-              <span className="font-semibold">
+              <span className="font-semibold text-sm">
                 {blog?.author?.name || "Unknown Author"}
               </span>
-              <p className="text-sm">
+
+              <span className="text-xs ml-2">
                 {new Date(blog?.createdAt).toLocaleDateString()}
-              </p>
+              </span>
             </div>
           </div>
 
-          <div className="mt-6 text-lg leading-relaxed">{blog?.body}</div>
+          {/* Blog Content */}
+          <div className="mt-6 text-lg leading-relaxed my-2 min-h-1/3">
+            {blog?.body}
+          </div>
 
+          {/* Tags */}
           {blog?.tags?.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="my-4 flex flex-wrap gap-2">
               {blog.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="bg-blue-500 text-white text-sm px-3 py-1 rounded-full"
+                  className="bg-gray-500 text-white text-xs px-1 w-fit py-1 rounded"
                 >
                   #{tag}
                 </span>
@@ -160,18 +169,18 @@ function SingleBlog() {
             </div>
           )}
 
-          <hr className="mt-4" />
+          <hr className="my-4" />
 
-          <div className="flex justify-between items-center">
+          {/* Like & Comment Section */}
+          <div className="flex justify-between items-center my-4">
             <div className="flex items-center space-x-2">
               <span className="cursor-pointer" onClick={handleLike}>
-                {blog?.likedBy?.includes(user?._id) ? (
+                {hasUserLiked ? (
                   <BsHeartFill className="text-red-500" size={24} />
                 ) : (
-                  <CiHeart className="text-gray-500" size={24} />
+                  <CiHeart className="text-gray-500" size={32} />
                 )}
               </span>
-
               <span
                 className="cursor-pointer"
                 onClick={() => setIsCommentsVisible(!isCommentsVisible)}
@@ -183,56 +192,57 @@ function SingleBlog() {
               {blog.reactions} likes • {blog.comments.length} comments
             </p>
           </div>
-          {isCommentsVisible &&
-            blog.comments.map((comment) => (
-              <div
-                className="flex items-center space-x-4 p-4"
-                key={comment._id}
-              >
-                <img
-                  src={comment.user?.image || "https://placehold.co/50"}
-                  alt={comment.user?.name || "User"}
-                  className="rounded-full h-9 w-9"
-                />
-                <div>
-                  <p className="font-semibold text-sm">
-                    {comment.user?.name || "Anonymous"}
-                  </p>
-                  <p>{comment.content}</p>
-                </div>
-              </div>
-            ))}
 
-          {user ? (
-            <div className="flex items-center space-x-4">
-              <img
-                src={user.image || "https://placehold.co/50"}
-                alt={user.name || "User"}
-                className="rounded-full h-9 w-9"
-              />
-              <input
-                type="text"
-                placeholder="Add comment"
-                className="border rounded indent-1 p-4 w-[80%]"
-                onChange={(e) => setCommentContent(e.target.value)}
-                value={commentContent}
-              />
-              <div
-                className="bg-blue-600 cursor-pointer hover:bg-blue-700 p-4 rounded-full"
-                onClick={postComment}
-              >
-                <IoSend size={24} color="white" />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <p>Please login to comment</p>
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer rounded py-2 px-6"
-              >
-                Login
-              </button>
+          {/* Comments Section */}
+          {/* Comments Section */}
+          {isCommentsVisible && (
+            <div className="mt-4">
+              {blog.comments.map((comment) => (
+                <div
+                  className="flex items-center space-x-4 p-4"
+                  key={comment._id}
+                >
+                  <img
+                    src={comment.user?.image || "https://placehold.co/50"}
+                    alt={comment.user?.name || "User"}
+                    className="rounded-full h-9 w-9"
+                  />
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {comment.user?.name || "Anonymous"}
+                    </p>
+                    <p>{comment.content}</p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add Comment Section */}
+              {user?.user ? (
+                <div className="flex items-center space-x-4 p-4 border-t mt-4">
+                  <img
+                    src={user.user.image || "https://placehold.co/50"}
+                    alt={user.user.name || "User"}
+                    className="rounded-full h-9 w-9"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Add comment"
+                    className="border rounded indent-1 p-2 flex-grow"
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    value={commentContent}
+                  />
+                  <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+                    onClick={postComment}
+                  >
+                    <IoSend size={24} />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-center text-red-500 mt-2">
+                  Please login to comment.
+                </p>
+              )}
             </div>
           )}
 

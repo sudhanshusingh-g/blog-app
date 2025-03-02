@@ -6,7 +6,6 @@ import {
   deleteBlog,
   allBlogs,
   addComment,
-  publishBlog,
   getUserBlogs,
   toggleLike,
 } from "../controllers/blogController.js";
@@ -21,7 +20,6 @@ router.get("/user/:userId/blogs", getUserBlogs);
 
 router.post("/", authentication, createBlog);
 router.post("/:id/comments", authentication, addComment);
-router.post("/:id/publish", authentication, publishBlog);
 router.post("/:id/like",authentication,toggleLike);
 router.put("/:id", authentication, updateBlog);
 router.delete("/:id", authentication, deleteBlog);

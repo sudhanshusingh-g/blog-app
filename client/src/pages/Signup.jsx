@@ -35,7 +35,7 @@ const Signup = () => {
     try {
       setLoading(true);
       const response = await signup(values);
-      if (response.success) {
+      if (response) {
         navigate("/login");
       } else {
         setError(response.message || "Signup failed. Please try again.");
