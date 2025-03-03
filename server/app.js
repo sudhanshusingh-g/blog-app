@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://adorable-medovik-d90dfe.netlify.app",
+    origin: "https://blog-app-uutv.onrender.com",
     // origin: "http://localhost:5173",
     credentials: true,
   })
