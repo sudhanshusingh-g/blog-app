@@ -27,8 +27,10 @@ const Login = () => {
 
    try {
      const response = await login(formData);
+     console.log(response);
      if (response.success) {
        const activeUser = await currentuser();
+       console.log("Active User Response:", activeUser);
        dispatch(setUser(activeUser));
        navigate("/");
      } else {
