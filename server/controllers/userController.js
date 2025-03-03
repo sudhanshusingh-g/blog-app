@@ -72,10 +72,16 @@ async function loginUser(req,res){
       expiresIn: "1h",
     });
     
-    res.cookie("token",token,{httpOnly:true}).send({
-      success:true,
-      message:"Logged in successfuully."
-    })
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+      })
+      .send({
+        success: true,
+        message: "Logged in successfuully.",
+      });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
