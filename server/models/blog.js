@@ -7,7 +7,6 @@ const blogSchema = new mongoose.Schema(
       required: [true, "Title is required"],
       trim: true,
       minLength: [3, "Title must be at least 3 characters"],
-      unique: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -84,9 +83,9 @@ blogSchema.pre("remove", async function (next) {
 
 
 
-blogSchema.methods.addComment = function (userId, content) {
+blogSchema.methods.addComment = async function (userId, content) {
   this.comments.push({ user: userId, content });
-  return this.save();
+  await this.save();
 };
 blogSchema.statics.findByAuthor = function (authorId) {
   return this.find({ author: authorId }).populate("author", "name email image");
