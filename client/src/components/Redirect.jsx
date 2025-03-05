@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 const Redirect = () => {
-  const { user } = useSelector((state) => state.user);
+    const { token } = useAuth();
 
-  return user ? <Navigate to="/" /> : <Outlet />;
+  return token ? <Navigate to="/" /> : <Outlet />;
 };
 
 export default Redirect;

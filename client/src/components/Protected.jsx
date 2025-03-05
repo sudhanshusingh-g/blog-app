@@ -1,11 +1,13 @@
 import {useSelector} from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from '../context/AuthProvider';
 
 function Protected() {
-    const {user}=useSelector((state)=> state.user);
+    const {token}=useAuth();
+
     
   return (
-    user ?<Outlet/>:<Navigate to={"/login"}/>
+    token ?<Outlet/>:<Navigate to={"/login"}/>
   )
 }
 

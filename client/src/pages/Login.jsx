@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { currentuser, login } from "../api/user";
-import { setUser, setError, setLoading } from "../redux/slices/userSlice";
+import { setUser, } from "../redux/slices/userSlice";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useAuth } from "../context/AuthProvider";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const navigate=useNavigate();
+  const dispatch=useDispatch();
+  const [error, setError] = useState("");
+  const[loading,setLoading]=useState(false);
+  const { setAuthToken } = useAuth();
 
-  const { error, loading } = useSelector((state) => state.user);
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,30 +25,27 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
- const handleSubmit = async (e) => {
-   e.preventDefault();
-   dispatch(setLoading());
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-   try {
-     const response = await login(formData);
-     console.log(response);
-     if (response.success) {
-       const activeUser = await currentuser();
-       console.log("Active User Response:", activeUser);
-       dispatch(setUser(activeUser));
-       navigate("/");
-     } else {
-       dispatch(setError(response.message || "Login failed. Try again."));
-     }
-   } catch (err) {
-     dispatch(
-       setError(err.response?.data?.message || "Login failed. Try again.")
-     );
-   } finally {
-     setFormData({ email: "", password: "" });
-   }
- };
+  const response = await login(formData); 
 
+  if (response.success) {
+    setAuthToken(response.token); 
+
+    const user = await currentuser(); 
+    if (user) {
+      dispatch(setUser(user));
+      navigate("/");
+    }
+  } else {
+    setError(response.message || "Something went wrong. Please try again.");
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen transition-all">
@@ -56,6 +57,7 @@ const Login = () => {
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email Input */}
           <div>
             <label className="block text-sm font-medium text-black dark:text-white">
               Email <span className="text-red-500">*</span>
@@ -70,6 +72,7 @@ const Login = () => {
             />
           </div>
 
+          {/* Password Input */}
           <div className="relative">
             <label className="block text-sm font-medium text-black dark:text-white">
               Password <span className="text-red-500">*</span>
@@ -95,6 +98,7 @@ const Login = () => {
             </button>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full p-2 rounded-lg transition duration-300 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -104,6 +108,7 @@ const Login = () => {
           </button>
         </form>
 
+        {/* Signup Link */}
         <p className="text-sm text-center mt-4 text-black dark:text-white">
           Don't have an account?{" "}
           <span

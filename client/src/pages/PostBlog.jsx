@@ -3,19 +3,21 @@ import { createBlog } from "../api/blog";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
+import { setBlog } from "../redux/slices/blogSlice";
 
 function PostBlog() {
   const [formData, setFormData] = useState({
     title: "",
-    body: "", // Changed 'content' to 'body' to match backend schema
+    body: "",
     status: "active",
     tags: [],
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const {user}=useSelector((state)=>state.user);
-  const dispatch=useDispatch();
-  const navigate=useNavigate();
+  const { user } = useSelector((state) => state.user);
+  const { blog } = useSelector((state) => state.blog);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Handle input changes
   const handleChange = (e) => {
@@ -38,9 +40,7 @@ function PostBlog() {
 
     try {
       const response = await createBlog(formData);
-      if (response.error) {
-        setMessage(response.message);
-      } else {
+      if (response.success) {
         setMessage("Blog Created Successfully!");
         setFormData({
           title: "",
@@ -48,8 +48,12 @@ function PostBlog() {
           status: "active",
           tags: [],
         });
-        dispatch(setUser(user))
+        dispatch(setBlog([...blog, response.blog]));
         navigate(`/blog/${response.blog._id}`);
+      } else {
+        setMessage(
+          response.message || "Failed to create blog. Please try again."
+        );
       }
     } catch (error) {
       setMessage("Failed to create blog. Please try again.");

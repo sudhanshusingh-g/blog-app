@@ -13,20 +13,20 @@ import Redirect from "./components/Redirect";
 function App() {
   return (
     <Routes>
-      {/*  */}
-      <Route path="/blog/:id" element={<SingleBlog />} />
       {/* Protected Route */}
       <Route element={<Protected />}>
         <Route path="/" element={<Home />} />
-
+        <Route path="/blog/:id" element={<SingleBlog />} />
         <Route path="/about" element={<About />} />
         <Route path="/edit/:id" element={<EditBlog />} />
         <Route path="/create" element={<PostBlog />} />
       </Route>
+      {/* Public route */}
       <Route element={<Redirect />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Route>
+      {/* Error/Not found route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

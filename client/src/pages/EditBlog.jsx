@@ -1,33 +1,18 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { allBlogs, updateBlog } from "../api/blog";
-import { setBlog, setLoading, setError } from "../redux/slices/blogSlice";
+import { updateBlog } from "../api/blog";
 
 function EditBlog() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { blog, loading, error } = useSelector((state) => state.blog);
+  const { blog } = useSelector((state) => state.blog);
+  const [loading, setLoading] = useState(false);
+  const [error,setError]=useState("");
 
-  const fetchBlogs = async () => {
-    try {
-      dispatch(setLoading());
-      const response = await allBlogs();
-      if (response.error) {
-        dispatch(setError());
-      } else {
-        dispatch(setBlog(response));
-      }
-    } catch (error) {
-      dispatch(setError());
-      console.error(error);
-    }
-  };
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
+ 
 
   const selectedBlog = blog.find((b) => b._id === id);
 
@@ -67,7 +52,7 @@ function EditBlog() {
 
     const updatedData = {
       title: formData.title,
-      body: formData.content, // Ensure it matches the backend field
+      body: formData.content,
       tags: formData.tags,
       status: formData.status,
     };
@@ -78,8 +63,7 @@ function EditBlog() {
       if (response.error) {
         console.error("Failed to update blog:", response.message);
       } else {
-        console.log("Blog updated successfully:", response);
-        navigate(`/blog/${id}`); // Redirect to updated blog page
+        navigate(`/blog/${id}`);
       }
     } catch (error) {
       console.error("Error updating blog:", error.message);

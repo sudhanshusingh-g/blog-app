@@ -1,14 +1,14 @@
 import { useContext } from "react";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import ThemeContext from "../context/ThemeContext";
 import { BsMoonStars } from "react-icons/bs";
 import { FiSun } from "react-icons/fi";
+import { useSelector } from "react-redux";
 
-const Layout = ({ children }) => {
-    const { user } = useSelector((state) => state.user);
+const Layout = ({children}) => {
     const navigate=useNavigate();
     const {theme,toggleTheme}=useContext(ThemeContext);
+    const {user}=useSelector((state)=>state.user);
   return (
     <>
       {/* Navbar */}
@@ -22,13 +22,13 @@ const Layout = ({ children }) => {
         </button>
         {!user ? (
           <button
-            className="text-blue-600 px-4 py-2 rounded-md cursor-pointer hover:bg-blue-600 hover:text-white dark:border"
+            className="text-white bg-blue-600 px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 "
             onClick={() => navigate("/login")}
           >
             Login/Signup
           </button>
-        ) : (
-          <ul className="flex space-x-4 items-center">
+         ) : ( 
+           <ul className="flex space-x-4 items-center">
             <li>
               <Link to={"/"} className="hover:underline text-md font-semibold">
                 Home
@@ -45,18 +45,20 @@ const Layout = ({ children }) => {
             <li>
               <Link to={"/about"}>
                 <img
-                  src={user.user.image}
-                  alt={user.user.name}
+                  src={user.image}
+                  alt={user.name}
                   className="rounded-full w-8 h-8  hover:border-[2px] border-blue-400"
                 />
               </Link>
             </li>
-          </ul>
-        )}
+          </ul> 
+         )} 
       </nav>
 
       {/* Main Content */}
-      <section className="flex-1">{children}</section>
+      <section className="flex-1">
+        {children}
+      </section>
     </>
   );
 };
