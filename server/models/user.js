@@ -58,4 +58,5 @@ userSchema.methods.removeBlog = function (blogId) {
   return this.save();
 };
 
-export default mongoose.model("User",userSchema);
+const User= mongoose.model("User",userSchema);
+export default User;
