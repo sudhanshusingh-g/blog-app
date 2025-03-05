@@ -46,6 +46,22 @@ userSchema.pre("save", async function (next) {
     next(error);
   }
 });
+userSchema.pre(
+  "deleteOne",
+  { document: true, query: false },
+  async function (next) {
+    const Blog = mongoose.model("Blog");
+
+    try {
+      // Delete all blogs created by the user
+      await Blog.deleteMany({ author: this._id });
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);

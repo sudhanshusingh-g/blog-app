@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
+import Blog from "../models/blog.js";
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -126,5 +127,27 @@ async function getCurrentUser(req, res) {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+async function deleteUser(req, res) {
+  try {
+    const userId = req.params.id;
 
-export { registerUser, loginUser, logoutUser, getCurrentUser };
+    // Ensure the user exists before deletion
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Delete all blogs created by this user
+    await Blog.deleteMany({ author: userId });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({ message: "User and associated blogs deleted" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+export { registerUser, loginUser, logoutUser, getCurrentUser,deleteUser };
