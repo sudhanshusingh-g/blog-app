@@ -46,15 +46,15 @@ async function loginUser(req, res) {
     if (!email || !password) {
       return res
         .status(400)
-        .json({ success: false, error: "Email and password are required." });
+        .json({ success: false, message: "Email and password are required." });
     }
 
     // Check if the user exists
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res
-        .status(404)
-        .json({ success: false, error: "User not found. Please register." });
+        .status(401)
+        .json({ success: false, message: "User not found. Please register." });
     }
 
     
@@ -67,7 +67,7 @@ async function loginUser(req, res) {
     if (!isPasswordMatch) {
       return res
         .status(401)
-        .json({ success: false, error: "Incorrect password!" });
+        .json({ success: false, message: "Incorrect password!" });
     }
 
     // Generate JWT Token
@@ -83,7 +83,7 @@ async function loginUser(req, res) {
       token,
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 }
 
@@ -96,7 +96,7 @@ async function logoutUser(req, res) {
       message: "Logged out successfully.",
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: "Failed to log out." });
+    res.status(500).json({ success: false, message: "Failed to log out." });
   }
 }
 
@@ -115,9 +115,10 @@ async function getCurrentUser(req, res) {
       return res.status(404).json({ error: "No user found. Please register." });
     }
 
-    const { email, name, image, blogs } = user;
+    const { _id,email, name, image, blogs } = user;
 
     res.json({
+      _id,
       email,
       name,
       image,
@@ -125,7 +126,7 @@ async function getCurrentUser(req, res) {
     });
   } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 

@@ -1,4 +1,4 @@
-import Blog from "../models/blog.js";
+import Blog from "../models/Blog.js";
 import User from "../models/User.js";
 
 // all blog
@@ -25,11 +25,7 @@ async function createBlog(req, res) {
     if (!authorUser) {
       return res.status(404).json({ error: "Author not found" });
     }
-    const existingBlog = await Blog.findOne({ title });
-
-    if (existingBlog) {
-      return res.status(409).json({ error: "Blog title already exists." });
-    }
+    
     const new_blog = new Blog({
       title,
       author,

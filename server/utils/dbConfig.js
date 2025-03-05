@@ -9,7 +9,7 @@ export async function dbConnection(){
     
     console.log(
       chalk.green.bgBlackBright.bold(
-        `Database connected successfully at port :${connection.connection.port}`
+        `Database connected successfully`
       )
     );
     } catch (error) {
