@@ -91,6 +91,5 @@ blogSchema.statics.findByAuthor = function (authorId) {
   return this.find({ author: authorId }).populate("author", "name email image");
 };
 
-const Blog=mongoose.model('Blog',blogSchema)
 
-export default Blog;
+export default mongoose.model("Blog", blogSchema);

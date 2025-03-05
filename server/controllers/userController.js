@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -19,7 +19,9 @@ async function registerUser(req, res) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ error: "User already registered.Please login" });
+      return res
+        .status(409)
+        .json({ error: "User already registered.Please login" });
     }
 
     // Create new user
@@ -34,7 +36,7 @@ async function registerUser(req, res) {
       message: "User registered successfully",
     });
   } catch (error) {
-    res.status(500).json({ success:false,error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 }
 
@@ -57,8 +59,6 @@ async function loginUser(req, res) {
         .json({ success: false, message: "User not found. Please register." });
     }
 
-    
-
     // Compare passwords
     const isPasswordMatch = await existingUser.comparePassword(
       password,
@@ -75,8 +75,6 @@ async function loginUser(req, res) {
       expiresIn: "1h",
     });
 
-    
-
     res.status(200).json({
       success: true,
       message: "Logged in successfully.",
@@ -90,7 +88,6 @@ async function loginUser(req, res) {
 // logout user
 async function logoutUser(req, res) {
   try {
-
     res.status(200).json({
       success: true,
       message: "Logged out successfully.",
@@ -115,7 +112,7 @@ async function getCurrentUser(req, res) {
       return res.status(404).json({ error: "No user found. Please register." });
     }
 
-    const { _id,email, name, image, blogs } = user;
+    const { _id, email, name, image, blogs } = user;
 
     res.json({
       _id,

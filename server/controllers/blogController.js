@@ -1,5 +1,5 @@
-import Blog from "../models/Blog.js";
-import User from "../models/User.js";
+import Blog from "../models/blog.js";
+import User from "../models/user.js";
 
 // all blog
 async function allBlogs(req, res) {
@@ -25,7 +25,7 @@ async function createBlog(req, res) {
     if (!authorUser) {
       return res.status(404).json({ error: "Author not found" });
     }
-    
+
     const new_blog = new Blog({
       title,
       author,
@@ -179,7 +179,7 @@ async function addComment(req, res) {
   try {
     const { content } = req.body;
     const blogId = req.params.id;
-    const user = req.user; 
+    const user = req.user;
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
@@ -220,7 +220,7 @@ async function getUserBlogs(req, res) {
 export const toggleLike = async (req, res) => {
   try {
     const blogId = req.params.id;
-    const user = req.user; 
+    const user = req.user;
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
@@ -231,7 +231,9 @@ export const toggleLike = async (req, res) => {
 
     if (hasLiked) {
       // Unlike the blog
-      blog.likedBy = blog.likedBy.filter((id) => id.toString() !== user._id.toString());
+      blog.likedBy = blog.likedBy.filter(
+        (id) => id.toString() !== user._id.toString()
+      );
       blog.reactions -= 1;
     } else {
       // Like the blog
